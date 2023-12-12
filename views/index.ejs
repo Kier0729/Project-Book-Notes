@@ -1,0 +1,40 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css" />
+    <title>Book Notes</title>
+  </head>
+  <body>
+    <div>
+        <form class="searchBook" action="/" method="post">
+            <input type="text" name="searchTitle" placeholder="Book Title" autocomplete="off" autofocus="true" />
+            <button class="search" type="submit">Search</button>
+          </form>
+    </div>
+    <div>
+        
+        <% for(let searchItem of books){%>
+            <form action="/"  method="post">
+            <div class="divSearch">
+            <button type="submit" onclick="this.form.submit()">
+            <input type="hidden" name="selectedId" value="<%= searchItem.index %>"/>
+            <%= searchItem.index %> <br/>
+            <%= searchItem.title %><br/>
+            <%= searchItem.author %><br/>
+            <%= searchItem.key %><br/>
+            <% if (searchItem.rating && searchItem.review) {%>
+            <%= searchItem.rating %><br/>
+            <%= searchItem.review %><br/>
+            <% } %>
+            </button>
+            </div>
+            </form>
+        <% } %>
+    </div>
+    
+    <footer>Copyright © <%= new Date().getFullYear() %>
+    </footer>
+  </body>
+  </html>
