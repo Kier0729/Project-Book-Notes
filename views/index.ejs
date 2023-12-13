@@ -10,12 +10,15 @@
     <div>
         <h1><%= visibility %></h1>
         <form class="searchBook" action="/search" method="post">
-            <input type="text" name="searchTitle" placeholder="Book Title" autocomplete="off" autofocus="true" />
+            <input type="text" name="searchTitle" placeholder="<%= locals.errorMsg  ? errorMsg: 'Book Title' %>" autocomplete="off" autofocus="true" />
             <button type="submit" onclick="this.form.submit()">Search</button>
+            <button type="submit" formaction="/back">Back</button>
           </form>
     </div>
     <div class="result">
+      <!-- loop base on books length -->
         <% for(let searchItem of books){%>
+          <!-- create a button with the book data inside from (searchResult) -->
             <form action="/new"  method="post">
             <div class="divSearch" hidden>
             <button type="submit" onclick="this.form.submit()">
@@ -31,6 +34,7 @@
             </button>
             </div>
             </form>
+          <!-- create a button with the book data inside from (database) -->
             <form action="/edit" method="post">
             <div class="divData">
                 <button type="submit" onclick="this.form.submit()">
@@ -47,9 +51,11 @@
                 </div>
             </form>
         <% } %>
+        <!-- end of loop -->
     </div>
-    <!-- Continue with logic if search or data -->
-    <% if (visibility == 'search') { %>
+    <!-- show divSearch -->
+    <% if (visibility == "Search Result/s") { %> 
+<!-- if should be outside the <script> tag so it can use the visibility that is being pass from the server -->
       <script>
         document.querySelector("h1").style.color = "Blue"
       for (let search of (document.getElementsByClassName("divSearch"))){
@@ -60,8 +66,9 @@
       }
       </script>
     <% } %>
-
-    <% if(visibility == 'data') { %>
+  <!-- show divData -->
+    <% if(visibility == "Book Review/s") { %>
+  <!-- if should be outside the <script> tag so it can use the visibility that is being pass from the server -->
       <script>
         document.querySelector("h1").style.color = "Red"
         for (let search of (document.getElementsByClassName("divData"))){

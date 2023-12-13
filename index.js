@@ -5,13 +5,14 @@ import pg from "pg";
 
 const app = express();
 const port = 3000;
-const API_URL_SEARCH = "https://openlibrary.org/search.json";
-const API_URL_COVER = "https://covers.openlibrary.org/b/olid/";
-let searchTitle;
-let display = [];
-let searchResult = [];
+const API_URL_SEARCH = "https://openlibrary.org/search.json";//For API Search query parameter
+const API_URL_COVER = "https://covers.openlibrary.org/b/olid/";//For link of book cover
+let searchTitle; //For calling the value entered in req.body.searchTitle(should be declare globally so checkItems() can use it)
+let display = [];//Data that will be shown in the home/index.js
+let searchResult = [];//Temporary array to store search results
 let addId;//id of the selected book
-let visibility;
+let visibility = "Book Review/s";//for deciding whichone to displaying between divData/divSearch
+let errorMsg;
 
 const db = new pg.Client({
     user: "postgres",
@@ -25,6 +26,7 @@ const db = new pg.Client({
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+//access api to search for book data
 async function checkItems() {
     let result;
     try{
@@ -36,7 +38,8 @@ async function checkItems() {
     return result;
   }
 
-  async function checkDatabase() {
+//access database
+async function checkDatabase() {
     try{
     const result = await db.query("SELECT * FROM book_notes ORDER BY id ASC");
     let myData = [];
@@ -48,26 +51,28 @@ async function checkItems() {
     console.log(error.message);
   } 
   }
+
+  //set to display the data in the database when the program starts
   display = await checkDatabase();
 
   app.get("/", async (req, res) => {
     res.render("index.ejs",{
         books: display,
-        visibility
+        visibility,
+        errorMsg
     });
     });
 
   //Saving search result from API to an object
   app.post("/search", async (req, res) => {
-    let search = req.body.searchTitle;
-    searchTitle = search;
-    let result = await checkItems();
-    let index = 0;
-    visibility = "search";
-    if (search) {
-        searchResult=[];
+    searchTitle = req.body.searchTitle;
+    
+    if (searchTitle != "") {
+        let result = await checkItems();
+        let index = 0;
+        searchResult=[];//empty temporary array every search occurs
         try{
-            (result.docs).forEach((element) => {
+            (result.docs).forEach((element) => {//(result.docs) = data needrd. Try to console and check result value
                 let authorName = (element.author_name);
                 let editionKey = (element.edition_key);
                 if (authorName && editionKey){
@@ -75,22 +80,28 @@ async function checkItems() {
                         id: index,
                         title: element.title,
                         author: authorName[0],
-                        key: (API_URL_COVER+`${editionKey[0]}-M.jpg`),
+                        key: (API_URL_COVER+`${editionKey[0]}-M.jpg`),//link of the book cover
                     };
                 index++;
                 }    
-            });
+            });//End of loop
+
+            visibility = "Search Result/s";//For index.ejs to know which div will be shown between divData/divSearch
             } catch (error) {
                 console.log("End of Result.");
             }
             display = searchResult;
             res.redirect("/");
+    } else {
+        errorMsg = "Please enter book title here."
+        res.redirect("/");
     }
     });
 
+//showing the selected book in the searchResult
     app.post("/new", async (req, res) => {
         let selectedId = req.body.selectedId;
-        //link for cover photo no need to set a code for get, just use the link as href src for img
+        
     if (selectedId){
         res.render("partials/new.ejs",{
             id: searchResult[selectedId].id,
@@ -102,11 +113,12 @@ async function checkItems() {
     }
     });
 
+//adding the selected book cover from the searchResult into the database
     app.post("/add", async (req, res) => {
     let myRating = req.body.myRating;
     let myReview = req.body.myReview;
-    
-                try{
+        if(myRating !="" && myReview != "") {//if both myRating and myReview have values/ not = ""
+                try{//if selected book cover is not yet in the database
                 //codes for saving selected book, ratings and reviews in database.
                 await db.query(
                     "INSERT INTO book_notes (title,author,key,rating,review) VALUES ($1,$2,$3,$4,$5)",
@@ -114,43 +126,39 @@ async function checkItems() {
                     myRating,myReview]
                   );
                 display = await checkDatabase();
-                res.render("index.ejs",{
-                    books: display,
-                    visibility: "data"
-                });
-            } catch (error) {
+                visibility = "Book Review/s"//For index.ejs to know which div will be shown between divData/divSearch
+                res.redirect("/");
+            } catch {//if book cover is already in the database
                 res.render("partials/new.ejs",{
                     id: searchResult[addId].id,
                     title: searchResult[addId].title,
                     author: searchResult[addId].author,
                     key: searchResult[addId].key,
-                    error: "Book Cover already in the database."
+                    errorRating: "Book Cover already in the database.",
+                    errorReview: "Book Cover already in the database."
                 });
             }
+        } else {//if myRating or myReview is = ""
+            res.render("partials/new.ejs",{
+                id: searchResult[addId].id,
+                title: searchResult[addId].title,
+                author: searchResult[addId].author,
+                key: searchResult[addId].key,
+                errorRating: "Please rate from 1 to 10:",
+                errorReview: "Please type your review here:"
+            });
+        }
     });
-
+//editting data from the database
     app.post("/save", async (req, res) => {
         let myRating = req.body.myRating;
         let myReview = req.body.myReview;
-        if (myReview != ''){
-            try{
+        if (myReview != "" && myRating != ""){//checking if myReview and myRating is not = ""
             await db.query("UPDATE book_notes SET rating = $1, review = $2 WHERE id = $3",[myRating, myReview, addId]);
             display = await checkDatabase();
+            visibility = "Book Review/s";
             res.redirect("/") ;
-            visibility = "data";
-            } catch {
-                const result = await db.query("SELECT * FROM book_notes WHERE id = $1",[addId]);
-                let myData = result.rows;
-                res.render("partials/new.ejs",{
-                    id: myData[0].id,
-                    title: myData[0].title,
-                    author: myData[0].author,
-                    key: myData[0].key,
-                    rating: myData[0].rating,
-                    review: myData[0].review
-                });
-            }
-        } else {
+        } else {//render again partials/new.ejs if save is hit, while either myReview or myRating doesn't have values 
             const result = await db.query("SELECT * FROM book_notes WHERE id = $1",[addId]);
             let myData = result.rows;
                 res.render("partials/new.ejs",{
@@ -162,16 +170,15 @@ async function checkItems() {
                     review: myData[0].review
                 });
         }
-        
     });
-
+//showing the selected data/book data from the database
     app.post("/edit", async (req, res) => {
         let selectedId = req.body.selectedId;
         const result = await db.query("SELECT * FROM book_notes WHERE id = $1",[selectedId]);
         let myData = result.rows;
-        //link for cover photo no need to set a code for get, just use the link as href src for img
-    if (selectedId){
+        
         res.render("partials/new.ejs",{
+           
             id: myData[0].id,
             title: myData[0].title,
             author: myData[0].author,
@@ -180,11 +187,17 @@ async function checkItems() {
             review: myData[0].review
         });
         addId = selectedId;
-    }
     });
+//deleting data from database    
     app.post("/delete", async (req, res) => {
         await db.query("DELETE FROM book_notes WHERE id = $1",[addId]);
         display = await checkDatabase();
+        res.redirect("/");
+    });
+//hitting the homepage
+    app.post("/back", async (req, res) => {
+        display = await checkDatabase();
+        visibility = "Book Review/s";
         res.redirect("/");
     });
 
