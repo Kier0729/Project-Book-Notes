@@ -1,3 +1,22 @@
 .divSearch {
     border: 2px solid black;
 }
+
+h1{
+    color: black;
+}
+
+.result{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 100vw;
+    min-height: 100vh;
+}
+
+footer {
+    flex: 0 0 auto;
+    color: black;
+    text-align: center;
+}

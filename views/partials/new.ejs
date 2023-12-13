@@ -13,7 +13,7 @@
 
           <div class="divSearch">
 
-          <%= index %> <br/>
+          <%= id %> <br/>
           <%= title %><br/>
           <%= author %><br/>
           <%= key %><br/>
@@ -21,10 +21,13 @@
           </div>
 
           <div>
-            <form class="add" action="/" method="post">
-                <input type="text" name="myRating" placeholder="Rate from 1 to 10" autocomplete="off" autofocus="true" />
-                <input type="text" name="myReview" placeholder="Type your Review here." autocomplete="off" autofocus="true" />
-                <button type="submit">Add</button>
+            <form class="add" action="/add" method="post">
+              <!-- plaseholder will be equals to rating/review pass down from server check if it has value or not  -->
+                <input type="text" name="myRating" value= "<%= locals.rating %>" placeholder="<%= locals.error  ? error: 'Rate from 1 to 10.' %>" autocomplete="off" autofocus="true" />
+                <input type="text" name="myReview" value= "<%= locals.review %>" placeholder="<%= locals.error  ? error: 'Type your Review here.' %>" autocomplete="off" autofocus="true" />
+                <button class="Add" type="submit" hidden>Add</button>
+                <button class="Save" formaction="/save" type="submit" hidden>Save</button>
+                <button class="Delete" formaction="/delete" type="submit" hidden>Delete</button>
             </form>
             <form action="/" method="get">
                 <button type="submit">Cancel</button>
@@ -32,6 +35,18 @@
         </div>
 
   </div>
+  <% if (locals.rating && locals.review) {%>
+    <script>
+      document.querySelector(".Save").removeAttribute("hidden")
+      document.querySelector(".Delete").removeAttribute("hidden")
+    </script>
+  <% } %>
+
+  <% if (!locals.rating && !locals.review) {%>
+    <script>
+      document.querySelector(".Add").removeAttribute("hidden")
+    </script>
+  <% } %>
   
   <footer>Copyright © <%= new Date().getFullYear() %>
   </footer>

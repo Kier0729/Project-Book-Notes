@@ -8,19 +8,19 @@
   </head>
   <body>
     <div>
-        <form class="searchBook" action="/" method="post">
+        <h1><%= visibility %></h1>
+        <form class="searchBook" action="/search" method="post">
             <input type="text" name="searchTitle" placeholder="Book Title" autocomplete="off" autofocus="true" />
-            <button class="search" type="submit">Search</button>
+            <button type="submit" onclick="this.form.submit()">Search</button>
           </form>
     </div>
-    <div>
-        
+    <div class="result">
         <% for(let searchItem of books){%>
-            <form action="/"  method="post">
-            <div class="divSearch">
+            <form action="/new"  method="post">
+            <div class="divSearch" hidden>
             <button type="submit" onclick="this.form.submit()">
-            <input type="hidden" name="selectedId" value="<%= searchItem.index %>"/>
-            <%= searchItem.index %> <br/>
+            <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
+            <%= searchItem.id %> <br/>
             <%= searchItem.title %><br/>
             <%= searchItem.author %><br/>
             <%= searchItem.key %><br/>
@@ -31,9 +31,47 @@
             </button>
             </div>
             </form>
+            <form action="/edit" method="post">
+            <div class="divData">
+                <button type="submit" onclick="this.form.submit()">
+                <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
+                <%= searchItem.id %> <br/>
+                <%= searchItem.title %><br/>
+                <%= searchItem.author %><br/>
+                <%= searchItem.key %><br/>
+                <% if (searchItem.rating && searchItem.review) {%>
+                <%= searchItem.rating %><br/>
+                <%= searchItem.review %><br/>
+                <% } %>
+                </button>
+                </div>
+            </form>
         <% } %>
     </div>
-    
+    <!-- Continue with logic if search or data -->
+    <% if (visibility == 'search') { %>
+      <script>
+        document.querySelector("h1").style.color = "Blue"
+      for (let search of (document.getElementsByClassName("divSearch"))){
+        search.removeAttribute("hidden")
+      }
+      for (let data of (document.getElementsByClassName("divData"))){
+        data.setAttribute("hidden", true)
+      }
+      </script>
+    <% } %>
+
+    <% if(visibility == 'data') { %>
+      <script>
+        document.querySelector("h1").style.color = "Red"
+        for (let search of (document.getElementsByClassName("divData"))){
+        search.removeAttribute("hidden")
+      }
+      for (let data of (document.getElementsByClassName("divSearch"))){
+        data.setAttribute("hidden", true)
+      }
+      </script>
+    <% } %>
     <footer>Copyright © <%= new Date().getFullYear() %>
     </footer>
   </body>
