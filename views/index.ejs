@@ -7,52 +7,61 @@
     <title>Book Notes</title>
   </head>
   <body>
-    <div>
+    <div class="divNav">
         <h1><%= visibility %></h1>
+        <div class="divSearchBack">
         <form class="searchBook" action="/search" method="post">
             <input type="text" name="searchTitle" placeholder="<%= locals.errorMsg  ? errorMsg: 'Book Title' %>" autocomplete="off" autofocus="true" />
+          <div>
             <button type="submit" onclick="this.form.submit()">Search</button>
             <button type="submit" formaction="/back">Back</button>
+          </div>
+        </div>
           </form>
     </div>
     <div class="result">
       <!-- loop base on books length -->
         <% for(let searchItem of books){%>
+          <% if (visibility == "Search Result/s") { %> 
           <!-- create a button with the book data inside from (searchResult) -->
-            <form action="/new"  method="post">
-            <div class="divSearch" hidden>
-            <button type="submit" onclick="this.form.submit()">
+            <div class="divSearch" hidden type="submit" onclick="document.forms['new<%= searchItem.id %>'].submit()"> 
+            <form name="new<%= searchItem.id %>" action="/new" method="post">
+            
             <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
-            <%= searchItem.id %> <br/>
-            <%= searchItem.title %><br/>
-            <%= searchItem.author %><br/>
-            <%= searchItem.key %><br/>
+            
+            <img class="bookCover" src="<%= searchItem.key %>" alt="">
+            <h4>Title: <%= searchItem.title %></h4>
+            <h4>Author: <%= searchItem.author %></h4>
             <% if (searchItem.rating && searchItem.review) {%>
-            <%= searchItem.rating %><br/>
-            <%= searchItem.review %><br/>
+            <h5>Rating: <%= searchItem.rating %></h5>
+            <p>Review: <%= searchItem.review %></p>
             <% } %>
-            </button>
-            </div>
-            </form>
+          </form>
+        </div>
+          
+            <% } %>
+
+            <% if(visibility == "Book Review/s") { %>  
           <!-- create a button with the book data inside from (database) -->
-            <form action="/edit" method="post">
-            <div class="divData">
-                <button type="submit" onclick="this.form.submit()">
+          <div class="divData" type="submit" onclick="document.forms['edit<%= searchItem.id %>'].submit()">  
+          <form name="edit<%= searchItem.id %>" action="/edit" method="post">
+            
                 <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
-                <%= searchItem.id %> <br/>
-                <%= searchItem.title %><br/>
-                <%= searchItem.author %><br/>
-                <%= searchItem.key %><br/>
+                <img class="bookCover" src="<%= searchItem.key %>" alt="">
+                <h4>Title: <%= searchItem.title %></h4>
+                <h4>Author: <%= searchItem.author %></h4>
                 <% if (searchItem.rating && searchItem.review) {%>
-                <%= searchItem.rating %><br/>
-                <%= searchItem.review %><br/>
+                <h5>Rating: <%= searchItem.rating %></h5>
+                <h5>Review: </h5><p><%= searchItem.review %></p>
                 <% } %>
-                </button>
-                </div>
             </form>
+          </div>   
+            <% } %>
         <% } %>
         <!-- end of loop -->
     </div>
+
+<!-- BELOW DATA CAN BE REMOVE BECAUSE IF STATEMENT ALREADY DECLARED ABOVE TO CHECK WHICH DIV TO SHOW/INSERT -->
     <!-- show divSearch -->
     <% if (visibility == "Search Result/s") { %> 
 <!-- if should be outside the <script> tag so it can use the visibility that is being pass from the server -->
