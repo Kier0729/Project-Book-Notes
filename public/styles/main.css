@@ -1,5 +1,5 @@
 .divSearch, .divData{
-    width: 33vw;
+    width: 97.5%;
     min-height: max-content;
     border-width: 0 2px 5px 0; /* top right bottom left */
     border-style: none solid solid none;
@@ -124,7 +124,7 @@ h4, h5, p {
 .result{
     padding-top: 130px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
     min-width: 100vw;
     min-height: 90vh;
