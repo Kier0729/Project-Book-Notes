@@ -117,8 +117,10 @@ async function checkDatabase() {
     app.post("/add", async (req, res) => {
     let myRating = parseInt(req.body.myRating);
     let myReview = req.body.myReview;
+    let myTitle = req.body.myTitle;
+    let myAuthor = req.body.myAuthor;
     //Number.isInteger(myRating) = function use to check if the value is an integer
-        if(Number.isInteger(myRating) && myReview != "" && (myRating > 0 && myRating < 11)) {//if both myRating and myReview have values/ not = ""
+        if(Number.isInteger(myRating) && myReview != "" && (myRating > 0 && myRating < 11) && myAuthor !="" && myTitle != "") {//if both myRating and myReview have values/ not = ""
                 try{//if selected book cover is not yet in the database
                 //codes for saving selected book, ratings and reviews in database.
                 await db.query(
@@ -153,12 +155,14 @@ async function checkDatabase() {
 //editting data from the database
     app.post("/save", async (req, res) => {
         
-        let myRating = parseInt(req.body.myRating);
-        let myReview = req.body.myReview;
-
-        if (myReview != "" && Number.isInteger(myRating) && (myRating > 0 && myRating < 11)){//checking if myReview and myRating is not = ""
+        let myRating = parseInt(req.body.myRating);//converting myRating to an INTEGER so that it can match
+        let myReview = req.body.myReview;//the condition below(IF statement)
+        let myTitle = req.body.myTitle;
+        let myAuthor = req.body.myAuthor;
         
-            await db.query("UPDATE book_notes SET rating = $1, review = $2 WHERE id = $3",[myRating, myReview, addId]);
+        if (myReview != "" && Number.isInteger(myRating) && (myRating > 0 && myRating < 11) && myAuthor !="" && myTitle != ""){//checking if myReview and myRating is not = ""
+        
+            await db.query("UPDATE book_notes SET rating = $1, review = $2, title = $4, author = $5 WHERE id = $3",[myRating, myReview, addId, myTitle, myAuthor]);
             display = await checkDatabase();
             visibility = "Book Review/s";
             res.redirect("/") ;

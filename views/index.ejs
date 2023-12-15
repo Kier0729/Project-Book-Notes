@@ -13,7 +13,7 @@
         <form class="searchBook" action="/search" method="post">
             <input type="text" name="searchTitle" placeholder="<%= locals.errorMsg  ? errorMsg: 'Book Title' %>" autocomplete="off" autofocus="true" />
           <div>
-            <button type="submit" onclick="this.form.submit()">Search</button>
+            <button type="submit">Search</button>
             <button type="submit" formaction="/back">Back</button>
           </div>
         </div>
@@ -22,13 +22,15 @@
     <div class="result">
       <!-- loop base on books length -->
         <% for(let searchItem of books){%>
-          <% if (visibility == "Search Result/s") { %> 
+          <!-- Decide which div between Search/Date to be made base on visibility value pass by the server -->
+          <% if (visibility == "Search Result/s") { %>  
           <!-- create a button with the book data inside from (searchResult) -->
+
+          <!-- onclick="codes below" means when div is click submit the form with the name indicated inside [] -->
             <div class="divSearch" hidden type="submit" onclick="document.forms['new<%= searchItem.id %>'].submit()"> 
             <form name="new<%= searchItem.id %>" action="/new" method="post">
             
             <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
-            
             <img class="bookCover" src="<%= searchItem.key %>" alt="">
             <h4>Title: <%= searchItem.title %></h4>
             <h4>Author: <%= searchItem.author %></h4>
@@ -36,9 +38,9 @@
             <h5>Rating: <%= searchItem.rating %></h5>
             <p>Review: <%= searchItem.review %></p>
             <% } %>
+
           </form>
         </div>
-          
             <% } %>
 
             <% if(visibility == "Book Review/s") { %>  
@@ -54,19 +56,23 @@
                 <h5>Rating: <%= searchItem.rating %></h5>
                 <h5>Review: </h5><p><%= searchItem.review %></p>
                 <% } %>
-            </form>
-          </div>   
+
+          </form>
+          </div>
+
             <% } %>
         <% } %>
         <!-- end of loop -->
     </div>
 
 <!-- BELOW DATA CAN BE REMOVE BECAUSE IF STATEMENT ALREADY DECLARED ABOVE TO CHECK WHICH DIV TO SHOW/INSERT -->
-    <!-- show divSearch -->
+  <!-- JUST REMOVE THE ATTRIBUTE "HIDDEN" INSIDE divSearch -->
+
+<!-- show divSearch -->
     <% if (visibility == "Search Result/s") { %> 
 <!-- if should be outside the <script> tag so it can use the visibility that is being pass from the server -->
       <script>
-        document.querySelector("h1").style.color = "Blue"
+        // document.querySelector("h1").style.color = "Blue"
       for (let search of (document.getElementsByClassName("divSearch"))){
         search.removeAttribute("hidden")
       }
@@ -75,11 +81,12 @@
       }
       </script>
     <% } %>
+    
   <!-- show divData -->
     <% if(visibility == "Book Review/s") { %>
   <!-- if should be outside the <script> tag so it can use the visibility that is being pass from the server -->
       <script>
-        document.querySelector("h1").style.color = "Red"
+        // document.querySelector("h1").style.color = "Red"
         for (let search of (document.getElementsByClassName("divData"))){
         search.removeAttribute("hidden")
       }
@@ -88,6 +95,7 @@
       }
       </script>
     <% } %>
+
     <footer>Copyright © <%= new Date().getFullYear() %>
     </footer>
   </body>

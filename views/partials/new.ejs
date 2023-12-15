@@ -12,19 +12,26 @@
           <div class="divNewSearch">
         <!-- Display the data from server -->
         <img class="bookCoverEdit" src="<%= key %>" alt="">
-        <h4>Title: <%= title %></h4>
-        <h4>Author: <%= author %></h4>
-          </div>
-            <form class="add" action="/add" method="post">
-              <div class="divNewButton">
+        <div>
+          <!-- form="add"(form ID) to assign which form it belongs even the element is not inside the form -->
+        <h4>Title: <input type="text" form="add"  name="myTitle" value= "<%= locals.title %>" placeholder="Enter Book Title." autocomplete="off"/></h4>
+        <h4>Author: <input type="text" form="add" name="myAuthor" value= "<%= locals.author %>" placeholder="Enter Book Author." autocomplete="off"/></h4>
+        </div>    
+        </div>
+            <form id="add" action="/add" method="post">
+            <div class="divNewButton">
               <!-- placeholder will be equals to rating/review pass down from server check if it has value or not  -->
+              <textarea name="myReview" cols="30" rows="10" tabindex="1" placeholder="<%= locals.errorReview  ? errorReview: 'Type your Review here.' %>" autocomplete="off" autofocus="true"><%= locals.review %></textarea>  
+                <div>
                 <input type="text" name="myRating" value= "<%= locals.rating %>" placeholder="<%= locals.errorRating  ? errorRating: 'Rate from 1 to 10.' %>" autocomplete="off"/>
-                <textarea name="myReview" cols="30" rows="10" tabindex="1" placeholder="<%= locals.errorReview  ? errorReview: 'Type your Review here.' %>" autocomplete="off" autofocus="true"><%= locals.review %></textarea>
-                <button class="Add" type="submit" hidden>Add</button>
-                <button class="Save" formmethod="post" formaction="/save" type="submit" hidden>Save</button>
-                <button class="Delete" formmethod="post" formaction="/delete" type="submit" hidden>Delete</button>
-                <button type="submit" formmethod="get" formaction="/">Cancel</button>
-              </div>
+                  <div>
+                  <button class="Add" type="submit" hidden>Add</button>
+                  <button class="Save" formmethod="post" formaction="/save" type="submit" hidden>Save</button>
+                  <button class="Delete" formmethod="post" formaction="/delete" type="submit" hidden>Delete</button>
+                  <button type="submit" formmethod="get" formaction="/">Cancel</button>
+                  </div>
+                </div>
+            </div>
             </form>
           
   </div>
