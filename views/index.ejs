@@ -45,7 +45,7 @@
 
             <% if(visibility == "Book Review/s") { %>  
           <!-- create a button with the book data inside from (database) -->
-          <div class="divData" type="submit" onclick="document.forms['edit<%= searchItem.id %>'].submit()">  
+          <div class="divData" type="submit" ondblclick="document.forms['edit<%= searchItem.id %>'].submit()">  
           <form name="edit<%= searchItem.id %>" action="/edit" method="post">
             
                 <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
