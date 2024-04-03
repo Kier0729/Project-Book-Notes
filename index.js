@@ -2,6 +2,7 @@ import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 import pg from "pg";
+import env from "dotenv";
 
 const app = express();
 const port = 3000;
@@ -13,14 +14,17 @@ let searchResult = [];//Temporary array to store search results
 let addId;//id of the selected book
 let visibility = "Book Review/s";//for deciding whichone to displaying between divData/divSearch
 let errorMsg;
+env.config();
 
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "Capstone",
-    password: "qwerty1234",
-    port: 5432,
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT,
+    connectionString: process.env.DB_CONNECTION_STRING,// needed for remote db connection
   });
+
   db.connect();
 
 app.use(bodyParser.urlencoded({extended: true}));
