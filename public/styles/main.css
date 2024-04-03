@@ -1,6 +1,6 @@
 .divSearch, .divData{
     width: 97.5%;
-    min-height: max-content;
+    height: fit-content;
     border-width: 0 2px 5px 0; /* top right bottom left */
     border-style: none solid solid none;
     border-color: rgba(0, 0, 0, 0) black black rgba(0, 0, 0, 0);
@@ -128,7 +128,8 @@ h4, h5, p {
     grid-template-columns: 1fr 1fr;
     justify-items: center;
     min-width: 100vw;
-    min-height: 90vh;
+    min-height: fit-content;
+    max-height: 90vh;
     gap: 10px;
 
 }
@@ -182,11 +183,15 @@ h4, h5, p {
 }
 
 footer {
+    position: fixed;
+    bottom: 0;
     flex: 0 0 auto;
     color: black;
     text-align: center;
+    width: 100%;
     margin-top: 5px;
         border-width: 2px 0 0 0; /* top right bottom left */
         border-style: solid none none none;
-        border-color: black rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+        /* border-color: black rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0); */
+        background-color: beige;
 }
