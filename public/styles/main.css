@@ -1,11 +1,12 @@
 .divSearch, .divData{
     width: 97.5%;
-    height: fit-content;
+    height: 300px;
     border-width: 0 2px 5px 0; /* top right bottom left */
     border-style: none solid solid none;
     border-color: rgba(0, 0, 0, 0) black black rgba(0, 0, 0, 0);
     border-radius: 0 10px 10px 10px;
     padding: 5px;
+    overflow: auto;
 }
 
 body {
@@ -17,6 +18,7 @@ body {
     justify-content: center;
     font-family: "Ubuntu", sans-serif;
     font-style: normal;
+    min-width: 600px;
 }
 
 h1{
@@ -156,24 +158,25 @@ h4, h5, p {
 
 @media (max-width: 600px){
     .result{
-        justify-items: center;
-        display: grid;
-        grid-template-columns: 1fr;
-        min-width: 100vw;
-        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 600px;
         gap: 5px;
     }
 
     .divSearch, .divData{
-        width: 90vw;
+        width: 550px;
         min-height: 200px;
         border-width: 0 0 5px 0; /* top right bottom left */
         border-style: none none solid none;
         border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) black rgba(0, 0, 0, 0);
         overflow: auto;
-        padding: .25rem;
+        padding: .5rem;
     }
+    /* .divData img,h4,h5{
 
+    } */
     
 }
 
