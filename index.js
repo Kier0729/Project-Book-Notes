@@ -76,7 +76,7 @@ async function checkDatabase() {
         let index = 0;
         searchResult=[];//empty temporary array every search occurs
         try{
-            (result.docs).forEach((element) => {//(result.docs) = data needrd. Try to console and check result value
+            (result.docs).forEach(async (element) => {//(result.docs) = data needrd. Try to console and check result value
                 let authorName = (element.author_name);
                 let editionKey = (element.edition_key);
                 if (authorName && editionKey){

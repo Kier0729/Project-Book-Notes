@@ -31,7 +31,12 @@
             <form name="new<%= searchItem.id %>" action="/new" method="post">
             
             <input type="hidden" name="selectedId" value="<%= searchItem.id %>"/>
-            <img class="bookCover" src="<%= searchItem.key %>" alt="">
+            <!-- <% if (searchItem.key) {%> -->
+              <img class="bookCover" src="<%= searchItem.key %>" alt="">
+            <!-- <% } else { %>
+            <h3>No Image</h3>
+            <% } %>
+            <h3><%= searchItem.key %></h3> -->
             <h4>Title: <%= searchItem.title %></h4>
             <h4>Author: <%= searchItem.author %></h4>
             <% if (searchItem.rating && searchItem.review) {%>
