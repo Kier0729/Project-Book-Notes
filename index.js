@@ -5,7 +5,7 @@ import pg from "pg";
 import env from "dotenv";
 
 const app = express();
-const port = 3000;
+const port = 3001;
 const API_URL_SEARCH = "https://openlibrary.org/search.json";//For API Search query parameter
 const API_URL_COVER = "https://covers.openlibrary.org/b/olid/";//For link of book cover
 let searchTitle; //For calling the value entered in req.body.searchTitle(should be declare globally so checkItems() can use it)
@@ -16,14 +16,30 @@ let visibility = "Book Review/s";//for deciding whichone to displaying between d
 let errorMsg;
 env.config();
 
+// const db = new pg.Client({
+//     user: process.env.PG_USER,
+//     host: process.env.PG_HOST,
+//     database: process.env.PG_DATABASE,
+//     password: process.env.PG_PASSWORD,
+//     port: process.env.PG_PORT,
+//     connectionString: process.env.DB_CONNECTION_STRING,// needed for remote db connection
+//   });
+
+//connection for neon.tech db
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, DB_CONNECTION_STRING } = process.env;
+
 const db = new pg.Client({
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
-    connectionString: process.env.DB_CONNECTION_STRING,// needed for remote db connection
-  });
+  host: PGHOST,
+  database: PGDATABASE,
+  username: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  connectionString:DB_CONNECTION_STRING,
+  // connection: {
+  //   options: `project=${ENDPOINT_ID}`,
+  // },
+});
+////////////////////////////////
 
   db.connect();
 
@@ -45,7 +61,7 @@ async function checkItems() {
 //access database
 async function checkDatabase() {
     try{
-    const result = await db.query("SELECT * FROM book_notes ORDER BY id ASC");
+    const result = await db.query(`SELECT * FROM book_notes ORDER BY id ASC`);
     let myData = [];
     result.rows.forEach((data) => { //transferring each row data to myData array
         myData.push(data);
@@ -128,7 +144,7 @@ async function checkDatabase() {
                 try{//if selected book cover is not yet in the database
                 //codes for saving selected book, ratings and reviews in database.
                 await db.query(
-                    "INSERT INTO book_notes (title,author,key,rating,review) VALUES ($1,$2,$3,$4,$5)",
+                    `INSERT INTO book_notes (title,author,key,rating,review) VALUES ($1,$2,$3,$4,$5)`,
                     [searchResult[addId].title, searchResult[addId].author,searchResult[addId].key,
                     myRating,myReview]
                   );
@@ -166,14 +182,14 @@ async function checkDatabase() {
         
         if (myReview != "" && Number.isInteger(myRating) && (myRating > 0 && myRating < 11) && myAuthor !="" && myTitle != ""){//checking if myReview and myRating is not = ""
         
-            await db.query("UPDATE book_notes SET rating = $1, review = $2, title = $4, author = $5 WHERE id = $3",[myRating, myReview, addId, myTitle, myAuthor]);
+            await db.query(`UPDATE book_notes SET rating = $1, review = $2, title = $4, author = $5 WHERE id = $3`,[myRating, myReview, addId, myTitle, myAuthor]);
             display = await checkDatabase();
             visibility = "Book Review/s";
             res.redirect("/") ;
             
         } else {//render again partials/new.ejs if save is hit, while myReview doesn't have values
             //or myRating is not an integer 
-            const result = await db.query("SELECT * FROM book_notes WHERE id = $1",[addId]);
+            const result = await db.query(`SELECT * FROM book_notes WHERE id = $1`,[addId]);
             let myData = result.rows;
                 res.render("partials/new.ejs",{
                     id: myData[0].id,
@@ -189,7 +205,7 @@ async function checkDatabase() {
     app.post("/edit", async (req, res) => {
         let selectedId = req.body.selectedId;
         
-        const result = await db.query("SELECT * FROM book_notes WHERE id = $1",[selectedId]);
+        const result = await db.query(`SELECT * FROM book_notes WHERE id = $1`,[selectedId]);
         let myData = result.rows;
         
         res.render("partials/new.ejs",{
@@ -205,7 +221,7 @@ async function checkDatabase() {
     });
 //deleting data from database    
     app.post("/delete", async (req, res) => {
-        await db.query("DELETE FROM book_notes WHERE id = $1",[addId]);
+        await db.query(`DELETE FROM book_notes WHERE id = $1`,[addId]);
         display = await checkDatabase();
         res.redirect("/");
     });
